@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="ctl_ribbon.onLoad">
+   <ribbon startFromScratch="false">
+ <tabs>
+  <tab id="WebTools" label="WebTools" insertBeforeMso="TabHome">
+    <group id="Group00" label="WebTools">
+      <dynamicMenu id="dynamicMenu1" label="シート一覧" imageMso="SheetBackground" size="large" getContent="ctl_ribbon.getContent" />
+      <button id="Button0_00" label="シート一覧更新" imageMso="DataRefreshAll" size="large" screentip="シート一覧更新" supertip="シート一覧更新" onAction="ctl_ribbon.Refresh" />
+    </group>
+
+      <group id="Group2" label="標準機能">
+        <control idMso="PasteValues"               visible="true" label="値貼付" />               <!--値の貼り付け-->
+        <menu id="MyMenu01" label="スタイル"  itemSize="normal" imageMso="AppointmentColorDialog" >
+          <control idMso="CellStylesGallery"       visible="true" />                              <!--セルのスタイル-->
+          <control idMso="FormatAsTableGallery"    visible="true" />                              <!--テーブルのスタイル-->
+        </menu>
+        <control idMso="WindowNew"                 visible="true" label="新ウインドウ"/>          <!--新しいウインドウ-->
+        <control idMso="WindowsArrangeAll"         visible="true" label="整列"/>                  <!--整列-->
+        <control idMso="ViewFreezePanesGallery"    visible="true" label="枠固定" />               <!--ウインドウ枠の固定-->
+        <control idMso="ViewGridlinesToggleExcel"  visible="true" label="枠線表示" />             <!--枠線の表示-->
+        <control idMso="TextBoxInsertMenu"         visible="true" label="テキスト" />             <!--テキスト ボックス-->
+        <control idMso="PictureInsertFromFile"     visible="true" label="図挿入" />               <!--図をファイルから挿入-->
+        <control idMso="ShapesInsertGallery"       visible="true" label="図形" />                 <!--図形-->
+        <control idMso="MergeCellsAcross"          visible="true" label="横結合" />               <!--横方向に結合-->
+        <control idMso="ClearAll"                  visible="true" label="全クリア" />             <!--すべてクリア-->
+    <button id="PersonalButton7" imageMso="MergeCenter" label="選択範囲中央" onAction="ctl_ribbon.setCenter" />
+
+        <menu id="MyMenu02" label="メニュー"  itemSize="normal" imageMso="BlogHomePage" >
+          <control idMso="FileSaveAsOtherFormats"  visible="true" label="別名保存" />             <!--他の形式で保存-->
+          <control idMso="FilePrintPreview"        visible="true" />                              <!--印刷プレビュー-->
+          <control idMso="FileSaveAsPdfOrXps"      visible="true" />                              <!--PDF生成-->
+          <control idMso="FileOpen"                visible="true" />                              <!--開く-->
+          <control idMso="FilePrepareMenu"         visible="true" />                              <!--配布準備-->
+          <control idMso="ClearContents"           visible="true" />                              <!--数式と値のクリア-->
+          <control idMso="RefreshAllMenu"          visible="true" />                              <!--すべて更新-->
+          <control idMso="DataValidation"          visible="true" />                              <!--入力規則-->
+          <control idMso="NameManager"             visible="true" />                              <!--名前の管理-->
+        </menu>
+    </group>
+    <group idMso="GroupFont"                       visible="true"/>                               <!--フォント-->
+    <group idMso="GroupAlignmentExcel"             visible="true"/>                               <!--配置-->
+  <group idMso="GroupNumber"                     visible="true"/>                               <!--数値-->
+    <group id="Group_GroupSortFilter" label="並べ替えとフィルタ">
+      <control idMso="SortAscendingExcel"          visible="true" />
+      <control idMso="SortDescendingExcel"         visible="true" />
+      <control idMso="SortDialog"                  visible="true" />
+      <control idMso="Filter"  size="large"        visible="true" />
+      <control idMso="SortClear"                   visible="true" />
+      <control idMso="RemoveDuplicates"            visible="true" />
+    </group>
+    <group idMso="GroupOutline"                    visible="true"/>                               <!--アウトラインー-->
+    </tab>
+  </tabs>
+  </ribbon>
+  <backstage>
+    <tab id="tab1" label="BK_Library" visible="true">
+      <firstColumn>
+      </firstColumn>
+
+      <secondColumn>
+        <group id="grp2" label="著作権について" visible="true">
+          <topItems>
+            <labelControl id="cp0100" label="免責事項" />
+            <labelControl id="cp0101" label="　・当コンテンツの利用に際し、いかなるトラブルが発生しても、作者は一切の責任を負いません。" />
+            <labelControl id="cp0102" label="　・当コンテンツは予告無しに変更・削除されることがあります。" />
+            <labelControl id="cp0103" label="　・このライセンスは予告なく改定される場合があります。" />
+            <labelControl id="cp0900" label="　" />
+            <labelControl id="cp0901" label="　" />
+            <labelControl id="cp0902" label="　" />
+            <labelControl id="cp0903" label="　" />
+            <labelControl id="cp0904" label="　" />
+            <labelControl id="cp0905" label="　" />
+            <labelControl id="cp0906" label="　" />
+            <labelControl id="cp0907" label="　" />
+            <labelControl id="cp0908" label="　" />
+            <labelControl id="cp0909" label="　" />
+            <labelControl id="cp0910" label="　" />
+            <labelControl id="cp0911" label="Copyright (C) 2015 B.Koizumi All Rights Reserved." />
+          </topItems>
+        </group>
+      </secondColumn>
+
+    </tab>
+  </backstage>
+</customUI>

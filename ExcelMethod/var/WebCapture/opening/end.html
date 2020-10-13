@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+	<head>
+		<meta charset="UTF-8" />
+		<title>KÖETOL</title>
+		<link rel="stylesheet" type="text/css" href="../../openingAssets/default.css" />
+		<link rel="stylesheet" type="text/css" href="../../openingAssets/animate.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="../../openingAssets/jquery.fittext.js"></script>
+		<script src="../../openingAssets/jquery.lettering.js"></script>
+		<script src="../../openingAssets/jquery.textillate.js"></script>
+
+	</head>
+	<body>
+		<div class="container">
+			<div class="appName">
+				Thank you for using WebCapture.
+			</div>
+		</div>
+
+<script>
+$(function () {
+	$('.appName').textillate({
+		selector: '.texts',
+		loop: true,
+		minDisplayTime: 2000,
+		initialDelay: 0,
+		autoStart: true,
+		in: {
+			effect: 'fadeInLeftBig',
+			delayScale: 1.0,
+			delay: 25,
+			sync: false,
+			shuffle: false,
+			reverse: false,
+			callback: function () {}
+		},
+		out: {
+			effect: 'fadeOut',
+			delayScale: 1.0,
+			delay: 50,
+			sync: false,
+			shuffle: true,
+			reverse: false,
+			callback: function () {}
+		},
+		callback: function () {},
+		type: 'char'
+	});
+})
+</script>
+	</body>
+</html>
