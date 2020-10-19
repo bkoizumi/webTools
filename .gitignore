@@ -14,3 +14,4 @@ InstallPackage/ExcelMethod/bin/aria2c.exe
 InstallPackage/ExcelMethod/bin/nkf.exe
 InstallPackage/ExcelMethod/bin/SeleniumBasic
 errorLog.txt
+Tmp/*

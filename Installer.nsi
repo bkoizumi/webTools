@@ -85,7 +85,7 @@ Section "WebTools本体" sec_Main
 
   SetOutPath $INSTDIR
   ; ディレクトリ/ファイルをコピー
-  File    "${APPDIR}\WebTools.xlsm"
+  File    "WebTools.xlsm"
   File /r "${APPDIR}\Downloads"
   File /r "${APPDIR}\var"
   File /r "${APPDIR}\logs"

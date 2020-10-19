@@ -4,8 +4,9 @@
  <tabs>
     <tab id="WebTools" label="WebTools" insertBeforeMso="TabHome">
       <group id="Group00" label="WebTools">
-        <button id="Button0_00" label="キャプチャ&#xD;&#xA;"    image="icon01" size="large" onAction="ctl_ribbon.WebCapture"  supertip="Webサイトの画面キャプチャを取得します" />
-        <button id="Button0_01" label="サイトマップ&#xD;&#xA;"  image="icon99" size="large" onAction="ctl_ribbon.Sitemap"     supertip="Webサイトをクローリングし、サイトマップを生成します" />
+        <button id="Button0_01" label="オプション&#xD;&#xA;"    size="large" onAction="ctl_ribbon.dispOption"    supertip="オプション設定画面を表示します" imageMso="AnimationCustomAddActionVerbDialog" />
+        <button id="Button0_02" label="キャプチャ&#xD;&#xA;"    imageMso="ScreenCaptureInsert" size="large" onAction="ctl_ribbon.WebCapture"  supertip="Webサイトの画面キャプチャを取得します" />
+        <button id="Button0_03" label="サイトマップ&#xD;&#xA;"  imageMso="GroupWebSiteMapMap" size="large" onAction="ctl_ribbon.Sitemap"     supertip="Webサイトをクローリングし、サイトマップを生成します" />
       </group >
 
 

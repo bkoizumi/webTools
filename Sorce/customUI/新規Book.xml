@@ -4,8 +4,8 @@
  <tabs>
   <tab id="WebTools" label="WebTools" insertBeforeMso="TabHome">
     <group id="Group00" label="WebTools">
-      <dynamicMenu id="dynamicMenu1" label="シート一覧" imageMso="SheetBackground" size="large" getContent="ctl_ribbon.getContent" />
-      <button id="Button0_00" label="シート一覧更新" imageMso="DataRefreshAll" size="large" screentip="シート一覧更新" supertip="シート一覧更新" onAction="ctl_ribbon.Refresh" />
+      <dynamicMenu id="dynamicMenu1" label="シート&#xD;&#xA;一覧" imageMso="SheetBackground" size="large" getContent="ctl_ribbon.getContent" />
+      <button id="Button0_00" label="シート&#xD;&#xA;一覧更新" imageMso="DataRefreshAll" size="large" screentip="シート一覧更新" supertip="シート一覧更新" onAction="ctl_ribbon.Refresh" />
     </group>
 
       <group id="Group2" label="標準機能">
