@@ -2,11 +2,11 @@ Attribute VB_Name = "menu"
 
 
 
-'***************************************************************************************************************************************************
+'******************************************************************************************************
 ' * その他
 ' *
 ' * @author Bunpei.Koizumi<bunpei.koizumi@gmail.com>
-'***************************************************************************************************************************************************
+'******************************************************************************************************
 Function その他_ヘルプ()
 
   If Worksheets("Help").Visible = 2 Then
@@ -71,39 +71,58 @@ End Function
 
 
 
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 ' * WebTools
 ' *
 ' * @author Bunpei.Koizumi<bunpei.koizumi@gmail.com>
-'***********************************************************************************************************************************************
+'**************************************************************************************************
+Sub オプション表示()
+
+  Call init.setting(True)
+  Call WebCapture.showOptionForm
+End Sub
+
+
+'--------------------------------------------------------------------------------------------------
 Sub WebCapture_開始()
-  Dim StartTime, StopTime As Variant
+
   StartTime = Now
 
-  Call init.setting
-  
-  
-  sheetWebCaptureList.Select
-  Application.Goto Reference:=Range("A1"), Scroll:=True
-  
   If MsgBox("リストを実行します。", vbYesNo + vbExclamation) = vbNo Then
     End
   End If
+  Worksheets("WebCapture").Visible = True
   
+  Call init.setting
+  Call Library.startScript
+  Call ProgressBar.showStart
+  
+  Call WebCapture.保存シート名チェック
   Call WebCapture.取得開始
+  
+  Worksheets("WebCapture").Visible = xlSheetVeryHidden
   
   StopTime = Now
   StopTime = StopTime - StartTime
   
-  sheetWebCaptureList.Range("G2") = WorksheetFunction.Text(StopTime, "[h]:mm:ss")
-  MsgBox "処理完了：" & WorksheetFunction.Text(StopTime, "[h]:mm:ss")
+  Application.Goto Reference:=Range("A1"), Scroll:=True
+  Call Library.showNotice(200, "キャプチャ")
+  Call Shell("Explorer.exe /select, " & targetFilePath, vbNormalFocus)
+  
+  Call ProgressBar.showEnd
+  Call Library.endScript
   
 End Sub
 
+'--------------------------------------------------------------------------------------------------
 Sub サイトマップ_開始()
 
+  Worksheets("サイトマップtmp").Visible = True
   Call init.setting
+  
   Call サイトマップ.取得開始
+  
+  Worksheets("サイトマップtmp").Visible = xlSheetVeryHidden
   
 End Sub
 

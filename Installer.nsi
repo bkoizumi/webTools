@@ -4,7 +4,7 @@ Var tciNetwork
 ; インストーラーの識別子
 !define PRODUCT_NAME "WebTools"
 ; インストーラーのバージョン。
-!define PRODUCT_VERSION "3.1.0.0"
+!define PRODUCT_VERSION "0.0.2.0"
 !define APPDIR "ExcelMethod"
 
 ; 多言語で使用する場合はここをUnicodeにすることを推奨
@@ -64,8 +64,8 @@ InstallDir "C:\ExcelMethod"
 RequestExecutionLevel admin
 
 ;インストール画面構成
-!define MUI_LICENSEPAGE_RADIOBUTTONS      ; 「ライセンスに同意する」をラジオボタンにする
-!define MUI_FINISHPAGE_NOAUTOCLOSE        ; インストール完了後自動的に完了画面に遷移しないようにする
+; !define MUI_LICENSEPAGE_RADIOBUTTONS      ; 「ライセンスに同意する」をラジオボタンにする
+; !define MUI_FINISHPAGE_NOAUTOCLOSE        ; インストール完了後自動的に完了画面に遷移しないようにする
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "C:\WorkSpace\VBA\webTools\LICENSE.txt"
@@ -82,10 +82,10 @@ UninstPage instfiles
 
 ; インストール処理---------------------------------------------------------------------------------------
 Section "WebTools本体" sec_Main
-
   SetOutPath $INSTDIR
+
   ; ディレクトリ/ファイルをコピー
-  File    "WebTools.xlsm"
+  File    "C:\WorkSpace\VBA\webTools\WebTools.xlsm"
   File /r "${APPDIR}\Downloads"
   File /r "${APPDIR}\var"
   File /r "${APPDIR}\logs"
@@ -97,47 +97,59 @@ Section "WebTools本体" sec_Main
   File    "${APPDIR}\bin\nkf.exe"
 
 
+  ; SeleniumBasicをExcel参照設定に追加
+  ExecWait '"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe $INSTDIR\bin\SeleniumBasic\Selenium.dll /codebase"'
+  Pop $0
+  DetailPrint "SeleniumBasicをExcel参照設定に追加: $0"
+
   AccessControl::GrantOnFile "$INSTDIR\bin\SeleniumBasic" "(S-1-1-0)" "FullAccess"
   AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
+  AccessControl::GrantOnFile "$INSTDIR\var" "(S-1-5-32-545)" "FullAccess"
 
+  ; レジストリキーの設定
   SetShellVarContext all
+
   CreateShortCut "$DESKTOP\WebTools.lnk" "$INSTDIR\WebTools.xlsm"
   WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstDir" $INSTDIR
   WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstVersion" ${PRODUCT_VERSION}
 
-  ; SeleniumBasicをExcel参照設定に追加
-  ExecWait  '"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe"  /tlb /codebase  "$INSTDIR\bin\SeleniumBasic\Selenium.dll"'
-  Pop $0
-  DetailPrint "SeleniumBasicをExcel参照設定に追加: $0"
-
-  # アンインストーラを出力
+  ; アンインストーラを出力
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 
   ;スタートメニューの作成
-  CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\WebTools.lnk"           "$INSTDIR\WebTools.xlsm"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Chrome起動.lnk"         "$INSTDIR\var\BrowserProfile\Chrome起動_default.bat"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\アンインストール.lnk"   "$INSTDIR\Uninstall.exe"
+  CreateDirectory "$SMPROGRAMS\ExcelMethod"
+  CreateShortCut "$SMPROGRAMS\ExcelMethod\WebTools.lnk"           "$INSTDIR\WebTools.xlsm"
+  CreateShortCut "$SMPROGRAMS\ExcelMethod\Chrome起動.lnk"         "$INSTDIR\var\BrowserProfile\Chrome起動_default.bat"
+  CreateShortCut "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"   "$INSTDIR\Uninstall.exe"
 SectionEnd
 
 SectionGroup /e "ネットワーク" Network
-    Section "TCIネットワーク" TCINW
+    Section /o "TCIネットワーク" TCINW
       WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstNetwork" "tci"
     SectionEnd
 
-    Section /o "その他ネットワーク" otherNW
+    Section  "その他ネットワーク" otherNW
       WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstNetwork" "other"
     SectionEnd
 SectionGroupEnd
 
 Section "Uninstall"
+  SetShellVarContext all
+
   ; Seleniumの登録解除
-  ExecWait '"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe $INSTDIR\bin\SeleniumBasic\Selenium.dll /u"' $0
+  ExecWait '"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe $INSTDIR\bin\SeleniumBasic\Selenium.dll /u"'
+  Pop $0
+  DetailPrint "SeleniumBasicをExcel参照設定を削除: $0"
+
+  ;スタートメニューから削除
+  Delete "$SMPROGRAMS\ExcelMethod\WebTools.lnk"
+  Delete "$SMPROGRAMS\ExcelMethod\Chrome起動.lnk"
+  Delete "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"
+  RMDir /r  "$SMPROGRAMS\ExcelMethod"
 
   ; ディレクトリ削除
   RMDir /r "$INSTDIR"
-  RMDir /r "$SMPROGRAMS\${PRODUCT_NAME}"
 
   ; レジストリキー削除
   DeleteRegKey HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}"
@@ -145,7 +157,7 @@ SectionEnd
 
 ; セクションの説明文を入力
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${sec_Main}       "Web用ツール"
+    !insertmacro MUI_DESCRIPTION_TEXT ${sec_Main}       "Webサイトの画面キャプチャ取得"
     !insertmacro MUI_DESCRIPTION_TEXT ${Network}        "ネットワークを選択してください"
     !insertmacro MUI_DESCRIPTION_TEXT ${TCINW}          "TCIネットワークに接続"
     !insertmacro MUI_DESCRIPTION_TEXT ${otherNW}        "TCIネットワーク以外に接続"
@@ -158,7 +170,6 @@ Function .onInit
   call  isInstalled
   call  IsDotNetFramework
 
-
   StrCpy $tciNetwork ${TCINW}
 
 FunctionEnd
@@ -169,7 +180,6 @@ Function .onSelChange
         !insertmacro RadioButton ${TCINW}
         !insertmacro RadioButton ${otherNW}
     !insertmacro EndRadioButtons
-
 FunctionEnd
 
 
@@ -177,29 +187,23 @@ FunctionEnd
 Function BootingCheck
 
 ; reCheck:
-;   StrCpy $1 "EXCEL.EXE"
-;   nsProcess::_FindProcess "$1"
-;   Pop $R0
-;   ${If} $R0 = 0
-;     MessageBox MB_OK "Excel :[$R0]"
-;     ; nsProcess::_KillProcess "$1"
-;     Pop $R0
-;     Sleep 500
-;     Goto reCheck
-;   ${EndIf}
+  ; ${nsProcess::FindProcess} "EXCEL.EXE" $R0
+  ; MessageBox MB_OK "[$R0]"
+  ; ${If} $R0 = 0
+  ; ${Else}
+  ;   MessageBox MB_OK "Excel が起動しています"
+  ;   ; nsProcess::_KillProcess "$1"
+  ;   Pop $R0
+  ;   Sleep 500
+  ;   Goto reCheck
+  ; ${EndIf}
 FunctionEnd
 
 
 ; インストール済みかどうか------------------------------------------------------------------------------
 Function isInstalled
-  ; Var /GLOBAL majorVer
-  ; Var /GLOBAL minorVer
-  ; Var /GLOBAL revisionVer
-  ; Var /GLOBAL buildVer
-  ; Var /GLOBAL instDir
-
-  ReadRegStr $0 HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}" "InstVersion"
-  ReadRegStr $1 HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}" "InstDir"
+  ReadRegStr $0 HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstVersion"
+  ReadRegStr $1 HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstDir"
 
   ${If} $0 == ${PRODUCT_VERSION}
     MessageBox MB_OK "同一バージョンがインストールされています"
@@ -208,7 +212,7 @@ Function isInstalled
   ; ${Else}
   ;   SetOutPath $1
   ;   File "${APPDIR}\Koetol.xlsm"
-  ;   WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}" "Version" ${PRODUCT_VERSION}
+  ;   WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "Version" ${PRODUCT_VERSION}
   ;   MessageBox MB_OK "既にバージョン $0 がインストールされているため、Koetol本体のみ更新しました"
   ;   Abort
   ${EndIf}
@@ -226,12 +230,13 @@ Function IsDotNetFramework
     StrCmp $2 "2.0" yesDotNet noDotNet
   noDotNet:
     MessageBox MB_OK ".NET Framework 2.0 がインストールされていません。"
-    ExecWait  '"fondue.exe" /enable-feature:netfx3'
-    Pop $0
-    MessageBox MB_OK ".NET Framework インストール => $0"
+    Exec  '"fondue.exe" /enable-feature:netfx3'
     Abort
 
   yesDotNet:
     ; OK の場合
+    ; MessageBox MB_OK ".NET Framework 2.0 がインストールされています。"
+    ; Exec  '"fondue.exe" /enable-feature:netfx3'
+    ; Abort
 
 FunctionEnd

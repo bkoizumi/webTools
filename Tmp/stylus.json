@@ -1,0 +1,20 @@
+[
+	{
+		"enabled": true,
+		"updateUrl": null,
+		"md5Url": null,
+		"url": null,
+		"originalMd5": null,
+		"installDate": 1603075449273,
+		"name": "スクロールバー非表示",
+		"sections": [
+			{
+				"code": "body::-webkit-scrollbar {\n    display:none;\n}"
+			}
+		],
+		"updateDate": 1603075449273,
+		"_id": "38895bcb-7066-42bc-90d0-0e61bdd1c872",
+		"_rev": 1603075449273,
+		"id": 1
+	}
+]

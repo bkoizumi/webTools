@@ -159,7 +159,10 @@ Function endScript(Optional flg As Boolean = False)
   Call Library.showDebugForm("endScript", CStr(flg))
 
   '強制的に再計算させる
-  Application.CalculateFull
+  If Application.CalculationVersion <> Workbooks(1).CalculationVersion Then
+    Application.CalculateFull
+  End If
+
 
  'アクティブセルの選択
   If SelectionCell <> "" And flg = True Then
@@ -1349,6 +1352,10 @@ Function showNotice(Code As Long, Optional process As String, Optional runEndflg
   If process <> "" Then
     Message = Replace(Message, "%%", process)
   End If
+  
+  If StopTime > 0 Then
+    Message = Message & vbNewLine & "処理時間：" & StopTime
+  End If
 
   If debugMode = "speak" Or debugMode = "develop" Or debugMode = "all" Then
     Application.Speech.Speak Text:=Message, SpeakAsync:=True, SpeakXML:=True
@@ -1707,7 +1714,7 @@ Function setReferences(BookType As String)
 
 
 Func_Exit:
-  Set ref = Nothing
+  Set Ref = Nothing
   Exit Function
 
 Err_SetReferences:
@@ -1988,11 +1995,11 @@ End Function
 
 
 
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 ' * 選択セルの拡大表示呼出
 ' *
 ' * @author Bunpei.Koizumi<koizumi.bunpei@trans-cosmos.co.jp>
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 Function KOETOL_ExpansionFormStart(Text As String, SetSelectTargetRows As String)
   Dim colLineName As Variant
   Dim count As Integer
@@ -2113,11 +2120,11 @@ Function KOETOL_ExpansionFormStart(Text As String, SetSelectTargetRows As String
 End Function
 
 
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 ' * 選択セルの拡大表示終了
 ' *
 ' * @author Bunpei.Koizumi<koizumi.bunpei@trans-cosmos.co.jp>
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 Function KOETOL_ExpansionFormEnd()
   Call init.setting
   

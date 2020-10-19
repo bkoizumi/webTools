@@ -4,14 +4,13 @@
 SourceExport.bat
 テストデータ
 VBAメモ.md
-Stylus - Chrome ウェブストア.url
-uBlock Origin - Chrome ウェブストア.url
 WebTools*.exe
 BrowserProfile*
-InstallPackage/del.bat
-InstallPackage/ExcelMethod/bin/7zip
-InstallPackage/ExcelMethod/bin/aria2c.exe
-InstallPackage/ExcelMethod/bin/nkf.exe
-InstallPackage/ExcelMethod/bin/SeleniumBasic
+ExcelMethod/bin/7zip
+ExcelMethod/bin/aria2c.exe
+ExcelMethod/bin/nkf.exe
+ExcelMethod/bin/SeleniumBasic
 errorLog.txt
-Tmp/*
+Tmp/*.xlsm
+Tmp/*Chrome ウェブストア*
+del.bat

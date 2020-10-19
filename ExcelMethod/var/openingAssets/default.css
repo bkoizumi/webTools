@@ -1,0 +1,23 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700|Dosis:200,600);
+body {
+	color: #fff;
+	font-family: 'Lato', Calibri, Arial, sans-serif;
+	background: #B0BEC5;
+}
+
+.container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+	/* border: 2px solid red; */
+	height: 500px;
+	width: 1100px;
+}
+
+.appName {
+	font-size: 50px;
+	font-weight: 200;
+	text-align: center;
+	text-shadow: 0 0 10px #fff;
+	/* border: 2px solid blue; */
+}

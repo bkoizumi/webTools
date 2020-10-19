@@ -18,7 +18,7 @@ Public sheetSitemap As Worksheet
 
 'グローバル変数----------------------------------
 Public Const thisAppName = "WebTools"
-Public Const thisAppVersion = "3.1.0.0"
+Public Const thisAppVersion = "0.0.2.0"
 
 'レジストリ登録用サブキー
 Public Const RegistryKey As String = "B.Koizumi"
@@ -42,18 +42,24 @@ Public AppSitemapPath As String
 Public BrowserProfiles As collection
 Public openingHTML As collection
 
+Public targetFilePath As String
+Public targetFileName As String
 
 'Public saveDir As String
 
 'ファイル関連
 Public logFile As String
 
+'その他
+Public StartTime As Date
+Public StopTime As Date
 
-'***********************************************************************************************************************************************
+
+'**************************************************************************************************
 ' * 設定クリア
 ' *
 ' * @author Bunpei.Koizumi<bunpei.koizumi@gmail.com>
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 Function clearSetting()
   Set sheetHelp = Nothing
   Set sheetNotice = Nothing
@@ -69,18 +75,19 @@ Function clearSetting()
   logFile = ""
 End Function
 
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 ' * 設定
 ' *
 ' * @author Bunpei.Koizumi<bunpei.koizumi@gmail.com>
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 Function setting(Optional reCheckFlg As Boolean)
   Dim line As Long
   Dim Message As String
   Dim varPath As String
   
 '  On Error GoTo catchError
-  
+  ThisWorkbook.Save
+
   If logFile <> "" And reCheckFlg <> True Then
     Exit Function
   End If
@@ -186,6 +193,12 @@ Function 名前定義()
     End If
   Next
   
+  'Book用の設定
+  For line = 3 To sheetSetting.Cells(Rows.count, 1).End(xlUp).Row
+    If sheetSetting.Range("A" & line) <> "" Then
+      sheetSetting.Range("B" & line).Name = sheetSetting.Range("A" & line)
+    End If
+  Next
 
   Exit Function
 'エラー発生時=====================================================================================
@@ -195,22 +208,21 @@ catchError:
 End Function
 
 
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 ' * シートの表示/非表示
 ' *
 ' * @author Bunpei.Koizumi<bunpei.koizumi@gmail.com>
-'***********************************************************************************************************************************************
+'**************************************************************************************************
 Function noDispSheet()
 
   Call init.setting
-  'Worksheets("Help").Visible = xlSheetVeryHidden
   Worksheets("Tmp").Visible = xlSheetVeryHidden
   Worksheets("Notice").Visible = xlSheetVeryHidden
-'  Worksheets("設定").Visible = xlSheetVeryHidden
-  Worksheets("サンプル").Visible = xlSheetVeryHidden
-  Worksheets(TeamsPlannerSheetName).Visible = xlSheetVeryHidden
+  Worksheets("WebCapture").Visible = xlSheetVeryHidden
+  Worksheets("サイトマップtmp").Visible = xlSheetVeryHidden
+  Worksheets("サイトマップ").Visible = xlSheetVeryHidden
   
-  Worksheets(mainSheetName).Select
+  Worksheets("WebCapture").Select
 End Function
 
 
@@ -218,16 +230,13 @@ End Function
 Function dispSheet()
 
   Call init.setting
-  Worksheets("Help").Visible = True
-  Worksheets("Tmp").Visible = True
   Worksheets("Notice").Visible = True
   Worksheets("設定").Visible = True
-  Worksheets("サンプル").Visible = True
+  Worksheets("WebCapture").Visible = True
+  Worksheets("サイトマップtmp").Visible = True
   
-  Worksheets(TeamsPlannerSheetName).Visible = True
-  Worksheets(mainSheetName).Visible = True
   
-  Worksheets(mainSheetName).Select
+  Worksheets("WebCapture").Select
   
 End Function
 

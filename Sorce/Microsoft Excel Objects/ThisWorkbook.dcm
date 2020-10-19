@@ -67,25 +67,26 @@ Private Sub Workbook_BeforeClose(Cancel As Boolean)
   On Error Resume Next
   
   Call Library.delRegistry("RP_" & ActiveWorkbook.Name)
+  
 End Sub
 
 '--------------------------------------------------------------------------------------------------
 Private Sub Workbook_Open()
   Dim today As Date, startDay As Date, endDay As Date
   Dim refers As VBIDE.References
-  Dim ref As VBIDE.Reference
+  Dim Ref As VBIDE.Reference
   
   On Error GoTo ErrLabel
   
   '参照設定の確認
   Set refers = Excel.ThisWorkbook.VBProject.References
-  For Each ref In refers
-    If ref.Name Like "*Selenium*" And ref.IsBroken = True Then
+  For Each Ref In refers
+    If Ref.Name Like "*Selenium*" And Ref.IsBroken = True Then
       MsgBox "必要なモジュールがインストールされていません。" & vbCrLf & "エラーログファイルを管理者へ送信してください", vbCritical
       Call 起動エラー調査
       GoTo endCheckLabel
     End If
-  Next ref
+  Next Ref
   Set refers = Nothing
   
   Call init.setting(True)
@@ -114,8 +115,12 @@ endLabel:
   
 ErrLabel:
   MsgBox "必要なモジュールがインストールされていません。" & vbCrLf & "エラーログファイルを管理者へ送信してください", vbCritical
+  With ActiveWorkbook.VBProject
+    For Each Ref In ActiveWorkbook.VBProject.References
+      If Ref.IsBroken Then .References.Remove Ref
+    Next Ref
+  End With
   Call 起動エラー調査
-  
   Call Library.endScript
 
 End Sub
@@ -142,7 +147,7 @@ Function 起動エラー調査()
   Dim InstMecab As String
 
   Dim refers As VBIDE.References
-  Dim ref As VBIDE.Reference
+  Dim Ref As VBIDE.Reference
   
   Dim FSO As Object
   
@@ -156,7 +161,7 @@ Function 起動エラー調査()
   InstDatabase = GetSetting(RegistryKey, RegistrySubKey, "InstDatabase")
   InstMecab = GetSetting(RegistryKey, RegistrySubKey, "InstMecab")
 
-  Message = Message & "Date        ：" & Format(Now(), "yyyy/mm/dd hh:nn:ss") & vbCrLf
+  Message = Message & "Date        ：" & Now() & vbCrLf
   Message = Message & "WorkbookPath：" & ThisWorkbook.Path & vbCrLf
   Message = Message & "WorkbookName：" & ThisWorkbook.Name & vbCrLf
   Message = Message & "thisAppVersion：" & thisAppVersion & vbCrLf
@@ -174,8 +179,8 @@ Function 起動エラー調査()
   '参照設定の確認
   Set FSO = CreateObject("Scripting.FileSystemObject")
   Set refers = Excel.ThisWorkbook.VBProject.References
-  For Each ref In refers
-    With ref
+  For Each Ref In refers
+    With Ref
       Message = Message & "Name:" & .Name & vbCrLf
       Message = Message & "IsBroken:" & .IsBroken & vbCrLf
       Message = Message & "fullPath:" & .fullPath
@@ -188,7 +193,7 @@ Function 起動エラー調査()
       Message = Message & "Version :" & .Major & "." & .Minor & vbCrLf
       Message = Message & "--------------------------------------------------------------------------------------------------------------" & vbCrLf
     End With
-  Next ref
+  Next Ref
   Set refers = Nothing
   Set FSO = Nothing
   

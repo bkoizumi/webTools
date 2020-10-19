@@ -131,23 +131,6 @@ Private Function GetRibbon(ByVal lRibbonPointer As Long) As Object
   p = 0: MoveMemory ribbonObj, p, LenB(p) '後始末
 End Function
    
-  
-'**************************************************************************************************
-' * その他
-' *
-' * @author Bunpei.Koizumi<bunpei.koizumi@gmail.com>
-'**************************************************************************************************
-Function ヘルプ(control As IRibbonControl)
-  Call menu.その他_ヘルプ
-End Function
-
-Function 選択行色付切替(control As IRibbonControl)
-  Call menu.その他_ハイライト
-End Function
-
-Function メンテ_データクリア(control As IRibbonControl)
-  Call menu.その他_データクリア
-End Function
 
 
 '**************************************************************************************************
@@ -165,6 +148,8 @@ Function Sitemap(control As IRibbonControl)
   Call menu.サイトマップ_開始
 End Function
 
-
-
+'----------------------------------------------------------------------------------------------
+Function dispOption(control As IRibbonControl)
+  Call menu.オプション表示
+End Function
 
