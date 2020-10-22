@@ -89,7 +89,7 @@ Function 取得開始()
     targetFileName = Dir(targetFilePath)
     targetFilePath = Replace(targetFilePath, "\" & targetFileName, "")
   End If
-  targetFilePath = Library.getFilePath(targetFilePath, targetFileName, "出力ファイルの保存", 1)
+  targetFilePath = Library.getSaveFilePath(targetFilePath, targetFileName, 3)
   If targetFilePath = "" Then
     targetBook.Close
     Set targetBook = Nothing

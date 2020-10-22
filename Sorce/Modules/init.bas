@@ -18,7 +18,7 @@ Public sheetSitemap As Worksheet
 
 'グローバル変数----------------------------------
 Public Const thisAppName = "WebTools"
-Public Const thisAppVersion = "0.0.2.0"
+Public Const thisAppVersion = "0.0.3.0"
 
 'レジストリ登録用サブキー
 Public Const RegistryKey As String = "B.Koizumi"

@@ -4,7 +4,7 @@ Var tciNetwork
 ; インストーラーの識別子
 !define PRODUCT_NAME "WebTools"
 ; インストーラーのバージョン。
-!define PRODUCT_VERSION "0.0.2.0"
+!define PRODUCT_VERSION "0.0.3.0"
 !define APPDIR "ExcelMethod"
 
 ; 多言語で使用する場合はここをUnicodeにすることを推奨
@@ -86,6 +86,7 @@ Section "WebTools本体" sec_Main
 
   ; ディレクトリ/ファイルをコピー
   File    "C:\WorkSpace\VBA\webTools\WebTools.xlsm"
+  ; File    "${APPDIR}\su.bat"
   File /r "${APPDIR}\Downloads"
   File /r "${APPDIR}\var"
   File /r "${APPDIR}\logs"
@@ -97,19 +98,23 @@ Section "WebTools本体" sec_Main
   File    "${APPDIR}\bin\nkf.exe"
 
 
-  ; SeleniumBasicをExcel参照設定に追加
-  ExecWait '"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe $INSTDIR\bin\SeleniumBasic\Selenium.dll /codebase"'
-  Pop $0
-  DetailPrint "SeleniumBasicをExcel参照設定に追加: $0"
+  SetShellVarContext all
 
   AccessControl::GrantOnFile "$INSTDIR\bin\SeleniumBasic" "(S-1-1-0)" "FullAccess"
   AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
   AccessControl::GrantOnFile "$INSTDIR\var" "(S-1-5-32-545)" "FullAccess"
 
-  ; レジストリキーの設定
-  SetShellVarContext all
+  ; SeleniumBasicをExcel参照設定に追加
+  ExecWait 'C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe /tlb $INSTDIR\bin\SeleniumBasic\Selenium.dll /codebase'
 
-  CreateShortCut "$DESKTOP\WebTools.lnk" "$INSTDIR\WebTools.xlsm"
+
+
+
+  Pop $0
+  DetailPrint "SeleniumBasicをExcel参照設定に追加: $0"
+
+
+  ; レジストリキーの設定
   WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstDir" $INSTDIR
   WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstVersion" ${PRODUCT_VERSION}
 
@@ -121,6 +126,7 @@ Section "WebTools本体" sec_Main
   CreateDirectory "$SMPROGRAMS\ExcelMethod"
   CreateShortCut "$SMPROGRAMS\ExcelMethod\WebTools.lnk"           "$INSTDIR\WebTools.xlsm"
   CreateShortCut "$SMPROGRAMS\ExcelMethod\Chrome起動.lnk"         "$INSTDIR\var\BrowserProfile\Chrome起動_default.bat"
+  ; CreateShortCut "$SMPROGRAMS\ExcelMethod\cmd.lnk"                "$INSTDIR\su.bat"
   CreateShortCut "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"   "$INSTDIR\Uninstall.exe"
 SectionEnd
 
@@ -138,14 +144,16 @@ Section "Uninstall"
   SetShellVarContext all
 
   ; Seleniumの登録解除
-  ExecWait '"%SystemRoot%\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe $INSTDIR\bin\SeleniumBasic\Selenium.dll /u"'
+  ExecWait 'C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe $INSTDIR\bin\SeleniumBasic\Selenium.dll /u'
   Pop $0
   DetailPrint "SeleniumBasicをExcel参照設定を削除: $0"
 
   ;スタートメニューから削除
   Delete "$SMPROGRAMS\ExcelMethod\WebTools.lnk"
   Delete "$SMPROGRAMS\ExcelMethod\Chrome起動.lnk"
+  ; Delete "$SMPROGRAMS\ExcelMethod\cmd.lnk"
   Delete "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"
+
   RMDir /r  "$SMPROGRAMS\ExcelMethod"
 
   ; ディレクトリ削除
@@ -211,9 +219,10 @@ Function isInstalled
 
   ; ${Else}
   ;   SetOutPath $1
-  ;   File "${APPDIR}\Koetol.xlsm"
+  ;   File "${APPDIR}\WebTools.xlsm"
+  ;   File "${APPDIR}\var\WebCapture\新規Book.xlsm"
   ;   WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "Version" ${PRODUCT_VERSION}
-  ;   MessageBox MB_OK "既にバージョン $0 がインストールされているため、Koetol本体のみ更新しました"
+  ;   MessageBox MB_OK "既にバージョン $0 がインストールされているため、Excelのみ更新しました"
   ;   Abort
   ${EndIf}
 
