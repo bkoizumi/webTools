@@ -19,18 +19,18 @@ Unicode true
 ; インストーラの見た目
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\orange-r.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP "${NSISDIR}\Contrib\Graphics\Header\orange-uninstall-r.bmp"
+!define MUI_HEADERIMAGE_BITMAP          "${NSISDIR}\Contrib\Graphics\Header\orange-r.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP        "${NSISDIR}\Contrib\Graphics\Header\orange-uninstall-r.bmp"
 
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\orange.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\orange-uninstall.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP    "${NSISDIR}\Contrib\Graphics\Wizard\orange.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP  "${NSISDIR}\Contrib\Graphics\Wizard\orange-uninstall.bmp"
 
 
 ; 使用する外部ライブラリ
 !include Sections.nsh
 !include MUI2.nsh
 !include LogicLib.nsh
-!include nsProcess.nsh
+; !include nsProcess.nsh
 
 
 ; 圧縮設定。通常は/solid lzmaが最も圧縮率が高い
@@ -42,31 +42,30 @@ Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe"
 
 ; インストール/アンインストール時の進捗画面
-ShowInstDetails show
+ShowInstDetails   show
 ShowUnInstDetails show
 
 
 ; インストーラーフィアルのバージョン情報記述
 VIProductVersion ${PRODUCT_VERSION}
-VIAddVersionKey ProductName "${PRODUCT_NAME}"
-VIAddVersionKey ProductVersion "${PRODUCT_VERSION}"
-VIAddVersionKey Comments "WebTool for Excel"
+VIAddVersionKey ProductName     "${PRODUCT_NAME}"
+VIAddVersionKey ProductVersion  "${PRODUCT_VERSION}"
+VIAddVersionKey Comments        "WebTools for Excel"
 VIAddVersionKey LegalTrademarks ""
-VIAddVersionKey LegalCopyright "Copyright 2020 Bumpei.Koizumi"
-VIAddVersionKey FileDescription ""
-VIAddVersionKey FileVersion "${PRODUCT_VERSION}"
+VIAddVersionKey LegalCopyright  "Copyright 2020 Bumpei.Koizumi"
+VIAddVersionKey FileDescription "${PRODUCT_NAME}"
+VIAddVersionKey FileVersion     "${PRODUCT_VERSION}"
 
 ; デフォルトのファイルのインストール先
-; InstallDir "C:\ExcelMethod"
-InstallDir "$appData\ExcelMethod"
+InstallDir "C:\ExcelMethod"
+; InstallDir "$appData\ExcelMethod"
 
 ;実行権限 [user/admin]
-RequestExecutionLevel user
-; RequestExecutionLevel admin
+RequestExecutionLevel admin
 
 ;インストール画面構成
 ; !define MUI_LICENSEPAGE_RADIOBUTTONS      ; 「ライセンスに同意する」をラジオボタンにする
-!define MUI_FINISHPAGE_NOAUTOCLOSE        ; インストール完了後自動的に完了画面に遷移しないようにする
+; !define MUI_FINISHPAGE_NOAUTOCLOSE        ; インストール完了後自動的に完了画面に遷移しないようにする
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "C:\WorkSpace\VBA\webTools\LICENSE.txt"
@@ -74,7 +73,6 @@ RequestExecutionLevel user
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
-
 # アンインストール画面構成
 UninstPage uninstConfirm
 UninstPage instfiles
@@ -88,24 +86,21 @@ Section "WebTools本体" sec_Main
   ; ディレクトリ/ファイルをコピー
   File    "C:\WorkSpace\VBA\webTools\WebTools.xlsm"
   File /r "${APPDIR}\Downloads"
+  File /r "${APPDIR}\work"
   File /r "${APPDIR}\logs"
   File /r "${APPDIR}\bin"
 
-  ; SetOutPath $INSTDIR\bin
-  ; File /r "${APPDIR}\bin\SeleniumBasic"
-
-
   SetShellVarContext current
 
-  ; AccessControl::GrantOnFile "$INSTDIR\bin\SeleniumBasic" "(S-1-1-0)" "FullAccess"
-  ; AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
-  ; AccessControl::GrantOnFile "$INSTDIR\var" "(S-1-5-32-545)" "FullAccess"
+  ; アクセス権の設定
+  AccessControl::GrantOnFile "$INSTDIR\bin\SeleniumBasic" "(S-1-1-0)" "FullAccess"
+  AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
+  AccessControl::GrantOnFile "$INSTDIR\var" "(S-1-5-32-545)" "FullAccess"
 
   ; SeleniumBasicをExcel参照設定に追加
   ExecWait 'C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe /tlb $INSTDIR\bin\SeleniumBasic\Selenium.dll /codebase'
   Pop $0
   DetailPrint "SeleniumBasicをExcel参照設定に追加: $0"
-
 
   ; レジストリキーの設定
   WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstDir"     $INSTDIR
@@ -117,8 +112,8 @@ Section "WebTools本体" sec_Main
 
   ;スタートメニューの作成
   CreateDirectory "$SMPROGRAMS\ExcelMethod"
-  CreateShortCut "$SMPROGRAMS\ExcelMethod\WebTools.lnk"           "$INSTDIR\WebTools.xlsm"
-  CreateShortCut "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"   "$INSTDIR\Uninstall.exe"
+  CreateShortCut  "$SMPROGRAMS\ExcelMethod\WebTools.lnk"           "$INSTDIR\WebTools.xlsm"
+  CreateShortCut  "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"   "$INSTDIR\Uninstall.exe"
 SectionEnd
 
 SectionGroup /e "ネットワーク" Network
