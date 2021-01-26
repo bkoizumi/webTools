@@ -77,9 +77,10 @@ End Function
 ' * @author Bunpei.Koizumi<bunpei.koizumi@gmail.com>
 '**************************************************************************************************
 Sub オプション表示()
-
+  Call Library.startScript
   Call init.setting(True)
-  Call WebCapture.showOptionForm
+  Call Library.endScript(True)
+  Call WebToolLib.showOptionForm
 End Sub
 
 
@@ -88,23 +89,26 @@ Sub WebCapture_開始()
 
   StartTime = Now
 
-  If MsgBox("リストを実行します。", vbYesNo + vbExclamation) = vbNo Then
-    End
-  End If
+  Call init.setting
+  sheetWebCaptureList.Select
+  Call Library.startScript
+  
+'  If MsgBox("リストを実行します。", vbYesNo + vbExclamation) = vbNo Then
+'    End
+'  End If
   Worksheets("WebCapture").Visible = True
   
-  Call init.setting
-  Call Library.startScript
   Call ProgressBar.showStart
   
-  Call WebCapture.保存シート名チェック
-  Call WebCapture.取得開始
+  Call キャプチャ.保存シート名チェック
+  Call キャプチャ.取得開始
   
   Worksheets("WebCapture").Visible = xlSheetVeryHidden
   
   StopTime = Now
   StopTime = StopTime - StartTime
   
+  sheetWebCaptureList.Select
   Application.Goto Reference:=Range("A1"), Scroll:=True
   Call Library.showNotice(200, "キャプチャ")
   Call Shell("Explorer.exe /select, " & targetFilePath, vbNormalFocus)
@@ -117,13 +121,17 @@ End Sub
 '--------------------------------------------------------------------------------------------------
 Sub サイトマップ_開始()
 
-  Worksheets("サイトマップtmp").Visible = True
   Call init.setting
+  Call Library.startScript
+  
+  Call init.項目列チェック
   
   Call サイトマップ.取得開始
   
-  Worksheets("サイトマップtmp").Visible = xlSheetVeryHidden
-  
+  Call Library.endScript
+  sheetSitemap.Select
+  Application.Goto Reference:=Range("A1"), Scroll:=True
+
 End Sub
 
 

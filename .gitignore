@@ -1,5 +1,4 @@
-
-~$*.xlsm
+~$*.xl*
 *.log
 SourceExport.bat
 テストデータ
@@ -17,3 +16,4 @@ del.bat
 マニュアル.pdf
 めも.txt
 メモ.xml
+/del.bat

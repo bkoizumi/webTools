@@ -22,6 +22,6 @@ Private Sub CancelButton_Click()
 End Sub
 
 Private Sub OK_Button_Click()
-  Call Library.ExpansionFormEnd(TextBox, ExpansionForm.Caption)
+  Call Library.showExpansionFormClose(TextBox, ExpansionForm.Caption)
   Unload ExpansionForm
 End Sub

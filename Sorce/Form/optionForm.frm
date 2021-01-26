@@ -18,7 +18,7 @@ Attribute VB_Exposed = False
 '初期設定------------------------------------------------------------------------------------------
 Private Sub UserForm_Initialize()
 
-  Call init.setting(True)
+  Call init.setting
   '初期表示ページ
   'マルチページの表示
   Me.MultiPage1.Value = 0
@@ -213,7 +213,11 @@ Private Sub BtnSubmit_Click()
 
 
   'Sitemap
-  sheetSetting.Range("siteMapURL") = Me.siteMapURL.Value
+  If Me.siteMapURL.Value Like "*/" Then
+    sheetSetting.Range("siteMapURL") = Library.cutRight(Me.siteMapURL.Value, 1)
+  Else
+    sheetSetting.Range("siteMapURL") = Me.siteMapURL.Value
+  End If
   Unload Me
 End Sub
 

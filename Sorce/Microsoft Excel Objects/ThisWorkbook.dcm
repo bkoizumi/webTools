@@ -7,207 +7,195 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = True
-#If VBA7 And Win64 Then
-  Private Declare PtrSafe Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSrc As Any, ByVal cbLen As LongPtr)
-#Else
-  Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSrc As Any, ByVal cbLen As Long)
-#End If
-
-
-'--------------------------------------------------------------------------------------------------
-Function 保護解除()
-  ActiveSheet.Unprotect passWord:="GByMB1GT99sc"
-  ActiveSheet.ScrollArea = ""
-  ActiveWindow.Zoom = 100
-End Function
-
-'--------------------------------------------------------------------------------------------------
-Function 保護()
-  Application.Goto Reference:=Range("A1"), Scroll:=True
-  ActiveWindow.Zoom = 100
-  ActiveSheet.Protect passWord:="GByMB1GT99sc"
-  ActiveSheet.ScrollArea = "A1:G40"
-End Function
-
-
-'--------------------------------------------------------------------------------------------------
+'#If VBA7 And Win64 Then
+'  Private Declare PtrSafe Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSrc As Any, ByVal cbLen As LongPtr)
+'#Else
+'  Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDest As Any, pSrc As Any, ByVal cbLen As Long)
+'#End If
+'
+'
+''--------------------------------------------------------------------------------------------------
+'Function 保護解除()
+'  ActiveSheet.Unprotect passWord:="GByMB1GT99sc"
+'  ActiveSheet.ScrollArea = ""
+'  ActiveWindow.Zoom = 100
+'End Function
+'
+''--------------------------------------------------------------------------------------------------
+'Function 保護()
+'  Application.Goto Reference:=Range("A1"), Scroll:=True
+'  ActiveWindow.Zoom = 100
+'  ActiveSheet.Protect passWord:="GByMB1GT99sc"
+'  ActiveSheet.ScrollArea = "A1:G40"
+'End Function
+'
+'
+''--------------------------------------------------------------------------------------------------
 'Private Sub Workbook_WindowActivate(ByVal Wn As Window)
-'  Dim p As LongPtr
-'  Dim ribbonObj As Object
 '
-'  'On Error Resume Next
-'  On Error GoTo catchError
+''  On Error GoTo catchError
 '
-'  If ribbonUI Is Nothing Then
-'    #If VBA7 And Win64 Then
-'      Dim lRibbonPointer As LongPtr
+'  Call init.setting
+''  Call ctlRibbon.setRibbonTabActive
 '
-'      lRibbonPointer = CLngPtr(Library.getRegistry("RP_" & ActiveWorkbook.Name))
-'    #Else
-'      Dim lRibbonPointer As Long
-'      lRibbonPointer = CLng(Library.getRegistry("RP_" & ActiveWorkbook.Name))
-'   #End If
-'  End If
-'
-'  Call Library.waitTime(1000)
-'  MoveMemory ribbonObj, lRibbonPointer, LenB(lRibbonPointer)
-'  Set ribbonUI = ribbonObj
-'  p = 0: MoveMemory ribbonObj, p, LenB(p) '後始末
-'
-'  ribbonUI.ActivateTab ("WebTools")
 '  Exit Sub
 '
-''エラー発生時=====================================================================================
+''エラー発生時====================================
 'catchError:
-'  Call MsgBox("読み込みに失敗しました", vbCritical, "WebTools")
+'
 'End Sub
-
-'--------------------------------------------------------------------------------------------------
-Private Sub Workbook_BeforeClose(Cancel As Boolean)
-  On Error Resume Next
-  
-  Call Library.delRegistry("RP_" & ActiveWorkbook.Name)
-  
-End Sub
-
-'--------------------------------------------------------------------------------------------------
-Private Sub Workbook_Open()
-  Dim today As Date, startDay As Date, endDay As Date
-  Dim refers As VBIDE.References
-  Dim Ref As VBIDE.Reference
-  
-  On Error GoTo ErrLabel
-  
-  '参照設定の確認
-  Set refers = Excel.ThisWorkbook.VBProject.References
-  For Each Ref In refers
-    If Ref.Name Like "*Selenium*" And Ref.IsBroken = True Then
-      MsgBox "必要なモジュールがインストールされていません。" & vbCrLf & "エラーログファイルを管理者へ送信してください", vbCritical
-      Call 起動エラー調査
-      GoTo endCheckLabel
-    End If
-  Next Ref
-  Set refers = Nothing
-  
-  Call init.setting(True)
-  Call Library.startScript
-  
-  If thisAppVersion <> setVal("appVersion") Then
-    Call Library.showNotice(400)
-  
-  ElseIf Not Library.chkDirExists(setVal("appInstDir")) Then
-    Call Library.showNotice(401)
-  Else
-    sheetWebCaptureList.Activate
-    GoTo endLabel
-  End If
-  
-endCheckLabel:
-  If (Workbooks.count = 1) Then
-    Application.Quit
-  End If
-  ThisWorkbook.Close
-  
-endLabel:
-  Call Library.endScript
-  
-  Exit Sub
-  
-ErrLabel:
-  MsgBox "必要なモジュールがインストールされていません。" & vbCrLf & "エラーログファイルを管理者へ送信してください", vbCritical
-  With ActiveWorkbook.VBProject
-    For Each Ref In ActiveWorkbook.VBProject.References
-      If Ref.IsBroken Then .References.Remove Ref
-    Next Ref
-  End With
-  Call 起動エラー調査
-  Call Library.endScript
-
-End Sub
-
-'--------------------------------------------------------------------------------------------------
-Private Sub Workbook_SheetDeactivate(ByVal Sh As Object)
-  If ActiveSheet.Name = "Help" Then
-  ElseIf Worksheets("Help").Visible = True Then
-    Worksheets("Help").Visible = xlSheetVeryHidden
-  End If
-End Sub
-
-
-'--------------------------------------------------------------------------------------------------
-Function 起動エラー調査()
-  Dim Message As String
-  Dim regVal As String
-  
-  Dim InstDir As String
-  Dim InstNetwork As String
-  Dim InstVersion As String
-  
-  Dim InstDatabase As String
-  Dim InstMecab As String
-
-  Dim refers As VBIDE.References
-  Dim Ref As VBIDE.Reference
-  
-  Dim FSO As Object
-  
-
-  Message = ""
-  'レジストリから情報取得
-  InstDir = GetSetting(RegistryKey, RegistrySubKey, "InstDir")
-  InstNetwork = GetSetting(RegistryKey, RegistrySubKey, "InstNetwork")
-  InstVersion = GetSetting(RegistryKey, RegistrySubKey, "InstVersion")
-  
-  InstDatabase = GetSetting(RegistryKey, RegistrySubKey, "InstDatabase")
-  InstMecab = GetSetting(RegistryKey, RegistrySubKey, "InstMecab")
-
-  Message = Message & "Date        ：" & Now() & vbCrLf
-  Message = Message & "WorkbookPath：" & ThisWorkbook.Path & vbCrLf
-  Message = Message & "WorkbookName：" & ThisWorkbook.Name & vbCrLf
-  Message = Message & "thisAppVersion：" & thisAppVersion & vbCrLf
-  
-  Message = Message & "--------------------------------------------------------------------------------------------------------------" & vbCrLf
-  Message = Message & "InstDir：" & InstDir & vbCrLf
-  Message = Message & "Version：" & InstVersion & vbCrLf
-  Message = Message & "Network：" & InstNetwork & vbCrLf
-  Message = Message & "Database：" & InstDatabase & vbCrLf
-  Message = Message & "Mecab：" & InstMecab & vbCrLf
-
-  Message = Message & "InitDB：" & ThisWorkbook.Worksheets("設定").Range("B9") & vbCrLf
-  Message = Message & "--------------------------------------------------------------------------------------------------------------" & vbCrLf
-      
-  '参照設定の確認
-  Set FSO = CreateObject("Scripting.FileSystemObject")
-  Set refers = Excel.ThisWorkbook.VBProject.References
-  For Each Ref In refers
-    With Ref
-      Message = Message & "Name:" & .Name & vbCrLf
-      Message = Message & "IsBroken:" & .IsBroken & vbCrLf
-      Message = Message & "fullPath:" & .fullPath
-      If FSO.FileExists(.fullPath) Then
-        Message = Message & " [True]" & vbCrLf
-      Else
-        Message = Message & " [False]" & vbCrLf
-      End If
-      Message = Message & "Guid :" & .Guid & vbCrLf
-      Message = Message & "Version :" & .Major & "." & .Minor & vbCrLf
-      Message = Message & "--------------------------------------------------------------------------------------------------------------" & vbCrLf
-    End With
-  Next Ref
-  Set refers = Nothing
-  Set FSO = Nothing
-  
-  logFile = ActiveWorkbook.Path & "\errorLog.txt"
-  
-  Open logFile For Output As #1
-  Print #1, Message
-  Close #1
-  
-  Dim WSH
-  Set WSH = CreateObject("Wscript.Shell")
-  WSH.Run logFile, 3
-  Set WSH = Nothing
-
-End Function
-
-
+'
+''--------------------------------------------------------------------------------------------------
+'Private Sub Workbook_BeforeClose(Cancel As Boolean)
+'  On Error GoTo catchError
+'
+'  Call Library.delRegistry(RegistryRibbonName)
+'
+'  Exit Sub
+'
+''エラー発生時====================================
+'catchError:
+'
+'End Sub
+'
+''--------------------------------------------------------------------------------------------------
+'Private Sub Workbook_Open()
+'  Dim today As Date, startDay As Date, endDay As Date
+'  Dim refers As VBIDE.References
+'  Dim Ref As VBIDE.Reference
+'
+'  On Error GoTo ErrLabel
+'
+'  '参照設定の確認
+'  Set refers = Excel.ThisWorkbook.VBProject.References
+'  For Each Ref In refers
+'    If Ref.Name Like "*Selenium*" And Ref.IsBroken = True Then
+'      MsgBox "必要なモジュールがインストールされていません。" & vbCrLf & "エラーログファイルを管理者へ送信してください", vbCritical
+'      Call 起動エラー調査
+'      GoTo endCheckLabel
+'    End If
+'  Next Ref
+'  Set refers = Nothing
+'
+'  Call init.setting(True)
+'  Call Library.startScript
+'
+'  If thisAppVersion <> setVal("appVersion") Then
+'    Call Library.showNotice(400)
+'
+'  ElseIf Not Library.chkDirExists(setVal("appInstDir")) Then
+'    Call Library.showNotice(401)
+'  Else
+'    sheetWebCaptureList.Activate
+'    GoTo endLabel
+'  End If
+'
+'endCheckLabel:
+'  If (Workbooks.count = 1) Then
+'    Application.Quit
+'  End If
+'  ThisWorkbook.Close
+'
+'endLabel:
+'  Call Library.endScript
+'
+'  Exit Sub
+'
+'ErrLabel:
+'  MsgBox "必要なモジュールがインストールされていません。" & vbCrLf & "エラーログファイルを管理者へ送信してください", vbCritical
+'  With ActiveWorkbook.VBProject
+'    For Each Ref In ActiveWorkbook.VBProject.References
+'      If Ref.IsBroken Then .References.Remove Ref
+'    Next Ref
+'  End With
+'  Call 起動エラー調査
+'  Call Library.endScript
+'
+'End Sub
+'
+''--------------------------------------------------------------------------------------------------
+'Private Sub Workbook_SheetDeactivate(ByVal Sh As Object)
+'  If ActiveSheet.Name = "Help" Then
+'  ElseIf Worksheets("Help").Visible = True Then
+'    Worksheets("Help").Visible = xlSheetVeryHidden
+'  End If
+'End Sub
+'
+'
+''--------------------------------------------------------------------------------------------------
+'Function 起動エラー調査()
+'  Dim Message As String
+'  Dim regVal As String
+'
+'  Dim InstDir As String
+'  Dim InstNetwork As String
+'  Dim InstVersion As String
+'
+'  Dim InstDatabase As String
+'  Dim InstMecab As String
+'
+'  Dim refers As VBIDE.References
+'  Dim Ref As VBIDE.Reference
+'
+'  Dim fso As Object
+'
+'
+'  Message = ""
+'  'レジストリから情報取得
+'  InstDir = GetSetting(RegistryKey, RegistrySubKey, "InstDir")
+'  InstNetwork = GetSetting(RegistryKey, RegistrySubKey, "InstNetwork")
+'  InstVersion = GetSetting(RegistryKey, RegistrySubKey, "InstVersion")
+'
+'  InstDatabase = GetSetting(RegistryKey, RegistrySubKey, "InstDatabase")
+'  InstMecab = GetSetting(RegistryKey, RegistrySubKey, "InstMecab")
+'
+'  Message = Message & "Date        :" & Now() & vbCrLf
+'  Message = Message & "WorkbookPath:" & ThisWorkbook.Path & vbCrLf
+'  Message = Message & "WorkbookName:" & ThisWorkbook.Name & vbCrLf
+'  Message = Message & "thisAppVersion:" & thisAppVersion & vbCrLf
+'
+'  Message = Message & "--------------------------------------------------------------------------------------------------------------" & vbCrLf
+'  Message = Message & "InstDir:" & InstDir & vbCrLf
+'  Message = Message & "Version:" & InstVersion & vbCrLf
+'  Message = Message & "Network:" & InstNetwork & vbCrLf
+'  Message = Message & "Database:" & InstDatabase & vbCrLf
+'  Message = Message & "Mecab:" & InstMecab & vbCrLf
+'
+'  Message = Message & "InitDB:" & ThisWorkbook.Worksheets("設定").Range("B9") & vbCrLf
+'  Message = Message & "--------------------------------------------------------------------------------------------------------------" & vbCrLf
+'
+'  '参照設定の確認
+'  Set fso = CreateObject("Scripting.FileSystemObject")
+'  Set refers = Excel.ThisWorkbook.VBProject.References
+'  For Each Ref In refers
+'    With Ref
+'      Message = Message & "Name:" & .Name & vbCrLf
+'      Message = Message & "IsBroken:" & .IsBroken & vbCrLf
+'      Message = Message & "fullPath:" & .fullPath
+'      If fso.FileExists(.fullPath) Then
+'        Message = Message & " [True]" & vbCrLf
+'      Else
+'        Message = Message & " [False]" & vbCrLf
+'      End If
+'      Message = Message & "Guid :" & .Guid & vbCrLf
+'      Message = Message & "Version :" & .Major & "." & .Minor & vbCrLf
+'      Message = Message & "--------------------------------------------------------------------------------------------------------------" & vbCrLf
+'    End With
+'  Next Ref
+'  Set refers = Nothing
+'  Set fso = Nothing
+'
+'  logFile = ActiveWorkbook.Path & "\errorLog.txt"
+'
+'  Open logFile For Output As #1
+'  Print #1, Message
+'  Close #1
+'
+'  Dim WSH
+'  Set WSH = CreateObject("Wscript.Shell")
+'  WSH.Run logFile, 3
+'  Set WSH = Nothing
+'
+'End Function
+'
+'

@@ -3,30 +3,55 @@
    <ribbon startFromScratch="false">
  <tabs>
     <tab id="WebTools" label="WebTools" insertBeforeMso="TabHome">
-      <group id="Group00" label="WebTools">
-        <button id="Button0_00" label="キャプチャ&#xD;&#xA;"    image="icon01" size="large" onAction="ctl_ribbon.WebCapture"  supertip="Webサイトの画面キャプチャを取得します" />
-        <button id="Button0_01" label="サイトマップ&#xD;&#xA;"  image="icon99" size="large" onAction="ctl_ribbon.Sitemap"     supertip="Webサイトをクローリングし、サイトマップを生成します" />
+      <group        id="G00" label="WebTools">
+        <button     id="G0_01" label="オプション&#xD;&#xA;"    size="large" onAction="ctlRibbon.dispOption"    supertip="オプション設定画面を表示します" imageMso="AnimationCustomAddActionVerbDialog" />
+        <separator  id="G0_02" />
+        <button     id="G0_03" label="キャプチャ&#xD;&#xA;"    imageMso="ScreenCaptureInsert" size="large" onAction="ctlRibbon.WebCapture"  supertip="Webサイトの画面キャプチャを取得します" />
+        <button     id="G0_04" label="サイトマップ&#xD;&#xA;"  imageMso="GroupWebSiteMapMap" size="large" onAction="ctlRibbon.Sitemap"     supertip="Webサイトをクローリングし、サイトマップを生成します" />
+        <button     id="G0_05" label="リンク抽出&#xD;&#xA;"  imageMso="BuildHyperlink" size="large" onAction="ctlRibbon.LinkExtract"     supertip="リンク抽出します" />
       </group >
 
 
-      <group id="Group90" label="その他">
-        <toggleButton id="TButton90"   label="ハイライト&#xD;&#xA;"  size="large" image="icon04"  getPressed="TButton1GetPressed"  onAction="ctl_ribbon.選択行色付切替" supertip="行・列のハイライトを設定します" />
-        <button id="Button90_2"  label="データクリア"  size="large" imageMso="ClearAll"           onAction="ctl_ribbon.データクリア" supertip="全データクリアします" />
-        <button id="Button90_4"  label="Help"          size="large" imageMso="Help"               onAction="ctl_ribbon.ヘルプ" supertip="ヘルプ" />
-      </group >
+      <group id="Group2" label="標準機能">
+        <control idMso="PasteValues"               visible="true" label="値貼付" />               <!--値の貼り付け-->
+        <menu id="MyMenu01" label="スタイル"  itemSize="normal" imageMso="AppointmentColorDialog" >
+          <control idMso="CellStylesGallery"       visible="true" />                              <!--セルのスタイル-->
+          <control idMso="FormatAsTableGallery"    visible="true" />                              <!--テーブルのスタイル-->
+        </menu>
+        <control idMso="WindowNew"                 visible="true" label="新ウインドウ"/>          <!--新しいウインドウ-->
+        <control idMso="WindowsArrangeAll"         visible="true" label="整列"/>                  <!--整列-->
+        <control idMso="ViewFreezePanesGallery"    visible="true" label="枠固定" />               <!--ウインドウ枠の固定-->
+        <control idMso="ViewGridlinesToggleExcel"  visible="true" label="枠線表示" />             <!--枠線の表示-->
+        <control idMso="TextBoxInsertMenu"         visible="true" label="テキスト" />             <!--テキスト ボックス-->
+        <control idMso="PictureInsertFromFile"     visible="true" label="図挿入" />               <!--図をファイルから挿入-->
+        <control idMso="ShapesInsertGallery"       visible="true" label="図形" />                 <!--図形-->
+        <control idMso="MergeCellsAcross"          visible="true" label="横結合" />               <!--横方向に結合-->
+        <control idMso="ClearAll"                  visible="true" label="全クリア" />             <!--すべてクリア-->
 
-
-
-
-
-    <group idMso="GroupFont"                       visible="true"/>                               <!--フォント-->
-    <group id="Group_GroupSortFilter" label="並べ替えとフィルタ">
-      <control idMso="SortAscendingExcel"   visible="true" />
-      <control idMso="SortDescendingExcel"  visible="true" />
-      <control idMso="SortDialog"           visible="true" />
-      <control idMso="Filter"               visible="true" />
-      <control idMso="SortClear"            visible="true" />
+        <menu id="MyMenu02" label="メニュー"  itemSize="normal" imageMso="BlogHomePage" >
+          <control idMso="FileSaveAsOtherFormats"  visible="true" label="別名保存" />             <!--他の形式で保存-->
+          <control idMso="FilePrintPreview"        visible="true" />                              <!--印刷プレビュー-->
+          <control idMso="FileSaveAsPdfOrXps"      visible="true" />                              <!--PDF生成-->
+          <control idMso="FileOpen"                visible="true" />                              <!--開く-->
+          <control idMso="FilePrepareMenu"         visible="true" />                              <!--配布準備-->
+          <control idMso="ClearContents"           visible="true" />                              <!--数式と値のクリア-->
+          <control idMso="RefreshAllMenu"          visible="true" />                              <!--すべて更新-->
+          <control idMso="DataValidation"          visible="true" />                              <!--入力規則-->
+          <control idMso="NameManager"             visible="true" />                              <!--名前の管理-->
+        </menu>
     </group>
+    <group idMso="GroupFont"                       visible="true"/>                               <!--フォント-->
+    <group idMso="GroupAlignmentExcel"             visible="true"/>                               <!--配置-->
+    <group idMso="GroupNumber"                     visible="true"/>                               <!--数値-->
+    <group id="Group_GroupSortFilter" label="並べ替えとフィルタ">
+      <control idMso="SortAscendingExcel"          visible="true" />
+      <control idMso="SortDescendingExcel"         visible="true" />
+      <control idMso="SortDialog"                  visible="true" />
+      <control idMso="Filter"  size="large"        visible="true" />
+      <control idMso="SortClear"                   visible="true" />
+      <control idMso="RemoveDuplicates"            visible="true" />
+    </group>
+    <group idMso="GroupOutline"                    visible="true"/>                               <!--アウトラインー-->
 
    </tab>
 
