@@ -134,5 +134,21 @@ Sub サイトマップ_開始()
 
 End Sub
 
+'--------------------------------------------------------------------------------------------------
+Sub リンク抽出_開始()
+
+  Call init.setting
+  Call Library.startScript
+  
+ 
+  Call リンク抽出.取得開始
+  
+  
+  Call Library.endScript
+  sheetLinkExtract.Select
+  Application.Goto Reference:=Range("A1"), Scroll:=True
+
+  Call Shell("Explorer.exe  " & targetFileDir, vbNormalFocus)
+End Sub
 
 

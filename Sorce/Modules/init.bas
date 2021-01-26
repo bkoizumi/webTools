@@ -12,16 +12,17 @@ Public sheetWebCaptureList  As Worksheet
 Public sheetWebCapture      As Worksheet
 Public sheetTmp             As Worksheet
 Public sheetSitemap         As Worksheet
+Public sheetLinkExtract       As Worksheet
 
 
 
 'グローバル変数----------------------------------
 Public Const thisAppName = "WebTools"
-Public Const thisAppVersion = "0.0.4.0"
+Public Const thisAppVersion = "0.0.4.1"
 
 'レジストリ登録用キー
-Public Const RegistryKey    As String = "B.Koizumi"
-Public Const RegistrySubKey As String = "WebTools"
+Public Const RegistryKey    As String = "WebTools"
+Public Const RegistrySubKey As String = "Main"
 Public RegistryRibbonName   As String
 
 
@@ -36,9 +37,8 @@ Public sitesInfo    As Object
 
 'パス関連
 Public thisWorkbookPath   As String
-Public CurrentDirPath     As String
-Public binPath            As String
-Public logPath            As String
+
+
 Public AppWebCapturePath  As String
 Public AppSitemapPath     As String
 
@@ -91,7 +91,7 @@ End Function
 Function setting(Optional reCheckFlg As Boolean)
   Dim line As Long
   Dim Message As String
-  Dim varPath As String
+  
   
 '  On Error GoTo catchError
   ThisWorkbook.Save
@@ -115,6 +115,7 @@ Function setting(Optional reCheckFlg As Boolean)
   Set sheetWebCaptureList = ThisBook.Worksheets("キャプチャ")
   Set sheetWebCapture = ThisBook.Worksheets("WebCapture")
   Set sheetSitemap = ThisBook.Worksheets("サイトマップ")
+  Set sheetLinkExtract = ThisBook.Worksheets("リンク抽出")
 
 
   '設定値読み込み----------------------------------------------------------------------------------
@@ -140,28 +141,31 @@ Function setting(Optional reCheckFlg As Boolean)
   'ドライブパス関連
   thisWorkbookPath = ThisWorkbook.Path
   
-  CurrentDirPath = setVal("appInstDir") & "\koetol"
-  binPath = setVal("appInstDir") & "\bin"
-  logPath = setVal("appInstDir") & "\logs"
-  varPath = setVal("appInstDir") & "\var"
+  With setVal
+    .Add "binPath", setVal("appInstDir") & "\bin"
+    .Add "logPath", setVal("appInstDir") & "\logs"
+    .Add "varPath", setVal("appInstDir") & "\var"
+    .Add "workPath", setVal("appInstDir") & "\work"
+  End With
   
-  logFile = logPath & "\ExcelMacro.log"
+ 
+  logFile = setVal("logPath") & "\ExcelMacro.log"
   
-  AppWebCapturePath = varPath & "\WebCapture"
-  AppSitemapPath = varPath & "\Sitemap"
+  AppWebCapturePath = setVal("varPath") & "\WebCapture"
+  AppSitemapPath = setVal("varPath") & "\Sitemap"
   
   Set BrowserProfiles = Nothing
   Set BrowserProfiles = CreateObject("Scripting.Dictionary")
   With BrowserProfiles
-    .Add "noScript", varPath & "\BrowserProfile\noScript"
-    .Add "default", varPath & "\BrowserProfile\default"
+    .Add "noScript", setVal("varPath") & "\BrowserProfile\noScript"
+    .Add "default", setVal("varPath") & "\BrowserProfile\default"
   End With
   
   Set openingHTML = Nothing
   Set openingHTML = CreateObject("Scripting.Dictionary")
   With openingHTML
-    .Add "Sitemap", varPath & "\Sitemap\opening"
-    .Add "WebCapture", varPath & "\WebCapture\opening"
+    .Add "Sitemap", setVal("varPath") & "\Sitemap\opening"
+    .Add "WebCapture", setVal("varPath") & "\WebCapture\opening"
   End With
   
   
@@ -335,6 +339,10 @@ Function 項目列チェック()
         sheetSetting.Range("D" & line) = "level_" & itemName
         sheetSetting.Range("maxTitleLevel") = itemName
         
+      Case itemName Like "new_L*"
+        itemName = Replace(itemName, "new_L", "")
+        sheetSetting.Range("D" & line) = "newDirLevel_" & itemName
+        sheetSetting.Range("maxTitleLevel") = itemName
         
       Case itemName = "タイトル"
         sheetSetting.Range("D" & line) = "title"

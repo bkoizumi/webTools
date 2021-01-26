@@ -49,11 +49,12 @@ Function Chrome‹N“®()
     .AddArgument ("--hide-scrollbars")
     .AddArgument ("--disable-gpu")
 '    .AddArgument ("--headless")
+    .AddArgument ("--app=file:///" & setVal("appInstDir") & "/var/opening/start.html")
     .AddArgument ("--enable-logging")
     .AddArgument ("--log-level=0")
     .AddArgument ("--dump-histograms-on-exit ")
     
-    If setVal("InstNetwork") = "TCI" Then
+    If setVal("InstNetwork") = "ProxyOn" Then
       .AddArgument ("--proxy-server=" & setVal("ProxyURL") & ":" & setVal("ProxyPort"))
     End If
     

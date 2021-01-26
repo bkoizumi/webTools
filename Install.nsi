@@ -1,10 +1,10 @@
 ﻿; ユーザー変数宣言
-Var tciNetwork
+Var setNetwork
 
 ; インストーラーの識別子
 !define PRODUCT_NAME "WebTools"
 ; インストーラーのバージョン。
-!define PRODUCT_VERSION "0.0.4.0"
+!define PRODUCT_VERSION "0.0.4.1"
 !define APPDIR "ExcelMethod"
 
 ; 多言語で使用する場合はここをUnicodeにすることを推奨
@@ -89,6 +89,7 @@ Section "WebTools本体" sec_Main
   File /r "${APPDIR}\work"
   File /r "${APPDIR}\logs"
   File /r "${APPDIR}\bin"
+  File /r "${APPDIR}\var"
 
   SetShellVarContext current
 
@@ -117,12 +118,12 @@ Section "WebTools本体" sec_Main
 SectionEnd
 
 SectionGroup /e "ネットワーク" Network
-    Section /o "TCIネットワーク" TCINW
-      WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstNetwork" "tci"
+    Section /o "Proxyあり" ProxyOn
+      WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstNetwork" "ProxyOn"
     SectionEnd
 
-    Section  "その他ネットワーク" otherNW
-      WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstNetwork" "other"
+    Section  "Proxyなし" ProxyOff
+      WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstNetwork" "ProxyOff"
     SectionEnd
 SectionGroupEnd
 
@@ -151,8 +152,8 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${sec_Main}       "Webサイトの画面キャプチャ取得"
     !insertmacro MUI_DESCRIPTION_TEXT ${Network}        "ネットワークを選択してください"
-    !insertmacro MUI_DESCRIPTION_TEXT ${TCINW}          "TCIネットワークに接続"
-    !insertmacro MUI_DESCRIPTION_TEXT ${otherNW}        "TCIネットワーク以外に接続"
+    !insertmacro MUI_DESCRIPTION_TEXT ${ProxyOn}        "Proxyが必要なネットワークに接続"
+    !insertmacro MUI_DESCRIPTION_TEXT ${ProxyOff}       "Proxyが不要なネットワークに接続"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -162,15 +163,15 @@ Function .onInit
   call  isInstalled
   call  IsDotNetFramework
 
-  StrCpy $tciNetwork ${TCINW}
+  StrCpy $setNetwork ${ProxyOn}
 
 FunctionEnd
 
 ; セクションの選択が変わったときの処理
 Function .onSelChange
-    !insertmacro StartRadioButtons $tciNetwork
-        !insertmacro RadioButton ${TCINW}
-        !insertmacro RadioButton ${otherNW}
+    !insertmacro StartRadioButtons $setNetwork
+        !insertmacro RadioButton ${ProxyOn}
+        !insertmacro RadioButton ${ProxyOff}
     !insertmacro EndRadioButtons
 FunctionEnd
 

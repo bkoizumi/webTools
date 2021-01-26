@@ -335,6 +335,15 @@ Function êÆå`()
       End If
       count = count + 1
     Next
+    
+    sheetSitemap.Range(SitemapCell("testURL") & line).FormulaR1C1 = "=siteMapURL_test & ""/"" &  RC[-4] & ""/"" & RC[-3] & ""/"" & RC[-2] & ""/"" & RC[-1]"
+    
+    
+    sheetSitemap.Range(SitemapCell("preURL") & line).FormulaR1C1 = "=siteMapURL_pre  & ""/"" &  RC[-5] & ""/"" & RC[-4] & ""/"" & RC[-3] & ""/"" & RC[-2]"
+                                                                    
+    sheetSitemap.Range(SitemapCell("proURL") & line).FormulaR1C1 = "=siteMapURL_pro & ""/"" &  RC[-6] & ""/"" & RC[-5] & ""/"" & RC[-4] & ""/"" & RC[-3]"
+    
+    
   Next
   
   'ãtLéöårê¸ê›íË

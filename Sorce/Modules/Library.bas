@@ -1377,7 +1377,7 @@ Function showDebugForm(meg1 As String, Optional meg2 As String)
         Call outputLog(runTime & vbTab & meg1)
         Debug.Print runTime & vbTab & meg1
       End If
-      GoTo label_showForm
+      GoTo label_end
 
     Case Else
       Exit Function
