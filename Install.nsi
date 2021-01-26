@@ -4,7 +4,7 @@ Var tciNetwork
 ; インストーラーの識別子
 !define PRODUCT_NAME "WebTools"
 ; インストーラーのバージョン。
-!define PRODUCT_VERSION "0.0.3.0"
+!define PRODUCT_VERSION "0.0.4.0"
 !define APPDIR "ExcelMethod"
 
 ; 多言語で使用する場合はここをUnicodeにすることを推奨
@@ -39,7 +39,7 @@ SetCompressor /solid lzma
 ; インストーラー名
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 ; 出力されるファイル名
-OutFile "${PRODUCT_NAME}_${PRODUCT_VERSION}.exe"
+OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-setup.exe"
 
 ; インストール/アンインストール時の進捗画面
 ShowInstDetails show
@@ -57,24 +57,25 @@ VIAddVersionKey FileDescription ""
 VIAddVersionKey FileVersion "${PRODUCT_VERSION}"
 
 ; デフォルトのファイルのインストール先
-InstallDir "C:\ExcelMethod"
-; InstallDir "$appData\ExcelMethod"
+; InstallDir "C:\ExcelMethod"
+InstallDir "$appData\ExcelMethod"
 
-;実行権限（user/admin）
-RequestExecutionLevel admin
+;実行権限 [user/admin]
+RequestExecutionLevel user
+; RequestExecutionLevel admin
 
 ;インストール画面構成
 ; !define MUI_LICENSEPAGE_RADIOBUTTONS      ; 「ライセンスに同意する」をラジオボタンにする
-; !define MUI_FINISHPAGE_NOAUTOCLOSE        ; インストール完了後自動的に完了画面に遷移しないようにする
+!define MUI_FINISHPAGE_NOAUTOCLOSE        ; インストール完了後自動的に完了画面に遷移しないようにする
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "C:\WorkSpace\VBA\webTools\LICENSE.txt"
-; !insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
-# アンインストーラ ページ
+# アンインストール画面構成
 UninstPage uninstConfirm
 UninstPage instfiles
 
@@ -86,37 +87,29 @@ Section "WebTools本体" sec_Main
 
   ; ディレクトリ/ファイルをコピー
   File    "C:\WorkSpace\VBA\webTools\WebTools.xlsm"
-  ; File    "${APPDIR}\su.bat"
   File /r "${APPDIR}\Downloads"
-  File /r "${APPDIR}\var"
   File /r "${APPDIR}\logs"
+  File /r "${APPDIR}\bin"
 
-  SetOutPath $INSTDIR\bin
-  File /r "${APPDIR}\bin\7zip"
-  File /r "${APPDIR}\bin\SeleniumBasic"
-  File    "${APPDIR}\bin\aria2c.exe"
-  File    "${APPDIR}\bin\nkf.exe"
+  ; SetOutPath $INSTDIR\bin
+  ; File /r "${APPDIR}\bin\SeleniumBasic"
 
 
-  SetShellVarContext all
+  SetShellVarContext current
 
-  AccessControl::GrantOnFile "$INSTDIR\bin\SeleniumBasic" "(S-1-1-0)" "FullAccess"
-  AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
-  AccessControl::GrantOnFile "$INSTDIR\var" "(S-1-5-32-545)" "FullAccess"
+  ; AccessControl::GrantOnFile "$INSTDIR\bin\SeleniumBasic" "(S-1-1-0)" "FullAccess"
+  ; AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
+  ; AccessControl::GrantOnFile "$INSTDIR\var" "(S-1-5-32-545)" "FullAccess"
 
   ; SeleniumBasicをExcel参照設定に追加
   ExecWait 'C:\Windows\Microsoft.NET\Framework\v2.0.50727\RegAsm.exe /tlb $INSTDIR\bin\SeleniumBasic\Selenium.dll /codebase'
-
-
-
-
   Pop $0
   DetailPrint "SeleniumBasicをExcel参照設定に追加: $0"
 
 
   ; レジストリキーの設定
-  WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstDir" $INSTDIR
-  WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstVersion" ${PRODUCT_VERSION}
+  WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstDir"     $INSTDIR
+  WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstVersion" ${PRODUCT_VERSION}
 
   ; アンインストーラを出力
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -125,18 +118,16 @@ Section "WebTools本体" sec_Main
   ;スタートメニューの作成
   CreateDirectory "$SMPROGRAMS\ExcelMethod"
   CreateShortCut "$SMPROGRAMS\ExcelMethod\WebTools.lnk"           "$INSTDIR\WebTools.xlsm"
-  CreateShortCut "$SMPROGRAMS\ExcelMethod\Chrome起動.lnk"         "$INSTDIR\var\BrowserProfile\Chrome起動_default.bat"
-  ; CreateShortCut "$SMPROGRAMS\ExcelMethod\cmd.lnk"                "$INSTDIR\su.bat"
   CreateShortCut "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"   "$INSTDIR\Uninstall.exe"
 SectionEnd
 
 SectionGroup /e "ネットワーク" Network
     Section /o "TCIネットワーク" TCINW
-      WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstNetwork" "tci"
+      WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstNetwork" "tci"
     SectionEnd
 
     Section  "その他ネットワーク" otherNW
-      WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstNetwork" "other"
+      WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstNetwork" "other"
     SectionEnd
 SectionGroupEnd
 
@@ -150,8 +141,6 @@ Section "Uninstall"
 
   ;スタートメニューから削除
   Delete "$SMPROGRAMS\ExcelMethod\WebTools.lnk"
-  Delete "$SMPROGRAMS\ExcelMethod\Chrome起動.lnk"
-  ; Delete "$SMPROGRAMS\ExcelMethod\cmd.lnk"
   Delete "$SMPROGRAMS\ExcelMethod\アンインストール.lnk"
 
   RMDir /r  "$SMPROGRAMS\ExcelMethod"
@@ -160,7 +149,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR"
 
   ; レジストリキー削除
-  DeleteRegKey HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}"
+  DeleteRegKey HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}"
 SectionEnd
 
 ; セクションの説明文を入力
@@ -210,8 +199,8 @@ FunctionEnd
 
 ; インストール済みかどうか------------------------------------------------------------------------------
 Function isInstalled
-  ReadRegStr $0 HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstVersion"
-  ReadRegStr $1 HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "InstDir"
+  ReadRegStr $0 HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstVersion"
+  ReadRegStr $1 HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "InstDir"
 
   ${If} $0 == ${PRODUCT_VERSION}
     MessageBox MB_OK "同一バージョンがインストールされています"
@@ -221,7 +210,7 @@ Function isInstalled
   ;   SetOutPath $1
   ;   File "${APPDIR}\WebTools.xlsm"
   ;   File "${APPDIR}\var\WebCapture\新規Book.xlsm"
-  ;   WriteRegStr HKCU "Software\VB and VBA Program Settings\B.Koizumi\${PRODUCT_NAME}" "Version" ${PRODUCT_VERSION}
+  ;   WriteRegStr HKCU "Software\VB and VBA Program Settings\${PRODUCT_NAME}\Main" "Version" ${PRODUCT_VERSION}
   ;   MessageBox MB_OK "既にバージョン $0 がインストールされているため、Excelのみ更新しました"
   ;   Abort
   ${EndIf}
